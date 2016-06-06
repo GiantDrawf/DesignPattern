@@ -4,6 +4,10 @@
 	<title>观察者模式</title>
 	<meta charset="utf-8">
 </head>
+	<input type="text" name="user_input" id="user_input">
+ 	<button id="user_submit">提交</button>
+ 	<ul id="msg"></ul>
+ 	<div id="msg_num"></div>
 <body>
 	<script type="text/javascript">
 		var Observer = (function(){
@@ -61,6 +65,7 @@
 		// 	console.log(e.type,e.args.msg);
 		// });
 		// Observer.fire( 'test' , { msg : '传递参数'});
+		//外观模式，简化样式
 		function $(id){
 			return document.getElementById(id);
 		}
@@ -98,9 +103,8 @@
 				$('msg_num').innerHTML = parseInt($('msg_num').innerHTML) + num;
 			}
 			//注册添加评论信息
-			Observer
-				.regist('addCommentMessage',changeMsgNum)
-				.regist('removeCommentMessage',changeMsgNum);
+			Observer.regist('addCommentMessage',changeMsgNum);
+			Observer.regist('removeCommentMessage',changeMsgNum);
 		})();
 		//工程师C
 		(function(){
@@ -120,6 +124,55 @@
 				text.value = '';
 			}
 		})();
+
+
+		//对象间解耦
+		var Student = function(result){
+			var that = this;
+			//学生回答结束
+			that.result = result;
+			//学生回答动作
+			that.say = function(){
+				console.log(that.result);
+			}
+		};
+		//一类学生在听讲，可以回答问题,方法answer
+		//回答问题方法
+		Student.prototype.answer = function(question){
+			//注册参数问题
+			Observer.regist(question,this.say);
+		};
+		//另一类学生在睡觉，方法sleep
+		Student.prototype.sleep = function(question){
+			console.log(this.result + ' ' + question + '已被注销');
+			Observer.remove(question,this.say);
+		};
+		//创建一个老师类
+		var Teacher = function(){};
+		//教师提问题的方法
+		Teacher.prototype.ask = function(question){
+			console.log('问题是:' + question);
+			//发布提问问题
+			Observer.fire(question);
+		};
+		//模拟出三个学生
+		var student1 = new Student('学生1回答问题'),
+			student2 = new Student('学生2回答问题'),
+			student3 = new Student('学生3回答问题');
+
+		//然后三个学生订阅老师提问的问题
+		student1.answer('什么是设计模式');
+		student1.answer('简述观察者模式');
+		student2.answer('什么是设计模式');
+		student3.answer('什么是设计模式');
+		student3.answer('简述观察者模式');
+		//后来学生3睡着了,所以简述观察者模式消息就注销了
+		student3.sleep('简述观察者模式');
+		//创建教师类
+		var teacher = new Teacher();
+		//问两个问题
+		teacher.ask('什么是设计模式');
+		teacher.ask('简述观察者模式');
 	</script>
 </body>
 </html>
