@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>事件委托</title>
+	<meta charset="utf-8">
+</head>
+<body>
+	<ul id="ul">
+		<li>a</li>
+		<li>b</li>
+		<li>c</li>
+	</ul>
+	<script type="text/javascript">
+	window.onload = function(){
+		var oUl = document.getElementById('ul');
+		oUl.addEventListener("mouseover",mouseoverDemo,false);
+		oUl.addEventListener("mouseout",mouseoutDemo,false);
+
+		function mouseoverDemo(ev){
+			var ev = ev || window.event;
+			var target = ev.target || ev.srcElement;
+			if(target.nodeName.toLowerCase() == "li"){
+				target.style.background = "red";
+			}
+		}
+		function mouseoutDemo(ev){
+			var ev = ev || window.event;
+			var target = ev.target || ev.srcElement;
+			if(target.nodeName.toLowerCase() == "li"){
+				target.style.background = "";
+			}
+		}
+ 	}
+	</script>
+</body>
+</html>
