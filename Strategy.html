@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>策略模式</title>
+	<meta charset="utf-8">
+</head>
+<body>
+<input type="text" name="昵称">
+<span></span>
+<input type="submit" name="提交" value="提交">
+	<script type="text/javascript">
+		//价格策略对象
+		var PriceStrategy = function(){
+			//内部算法对象
+			var strategy = {
+				return30 : function(price){
+					return +price + parseInt(price / 100) * 30;
+				},
+				return50 : function(price){
+					return +price + parseInt(price / 100) * 50; 
+				},
+				percent90 : function(price){
+					return price * 100 * 90 / 10000;
+				},
+				percent80 : function(price){
+					return price * 100 * 80 / 10000;
+				},
+				percent50 : function(price){
+					return price * 100 * 50 / 10000;
+				}
+			}
+			//策略模式接口
+			return function(algorithm,price){
+				//方法存在，则调用,不存在，则返回false
+				return strategy[algorithm] && strategy[algorithm](price)
+			}
+		}();
+
+		var price = PriceStrategy('return50','314.67');
+		console.log(price);
+
+		function $(id){
+			return document.getElementById(id);
+		};
+		//策略模式用于JQuery中的缓冲动画
+		//$('div').animate({width:'200px'},1000,'linear');
+		//$('div').animate({width:'200px'},1000,'swing');
+
+
+		//表单验证
+		var InputStrategy = function(){
+			var strategy = {
+				notNull : function(value){
+					return /\s+/.test(value) ? '请输入内容' : '';
+				},
+				number : function(value){
+					return /^[0-9]+(\.[0-9]+)?$/.test(value) ? '' : '请输入数字';
+				}
+			}
+			return {
+				//验证接口 type 算法 value 表单值
+				check : function(type,value){
+					value = value.replace(/^\s+$/g,'');
+					return strategy[type] ? strategy[type](value) : '没有该类型的检测方法';
+				},
+				addStrategy : function(type,fn){
+					strategy[type] = fn;
+				}
+			}
+		}();
+		//算法拓展
+		InputStrategy.addStrategy('nickname',function(value){
+			return /^[a-zA-Z]\w{3,7}$/.test(value) ? '' : '请输入4-8位昵称';
+		});
+
+		function $tag(tag,context){
+			context = context || document;
+			return context.getElementsByTagName(tag);
+		}
+		$tag('input')[1].onclick = function(){
+			var value = $tag('input')[0].value;
+			$tag('span')[0].innerHTML = InputStrategy.check('nickname',value);
+		}
+	</script>
+</body>
+</html>
